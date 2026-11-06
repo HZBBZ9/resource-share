@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}资料分享站{% endblock %}</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-soft: #eef2ff;
+            --border: #e2e8f0;
+            --danger: #dc2626;
+            --danger-soft: #fee2e2;
+            --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04);
+            --radius: 12px;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: var(--primary); }
+        a:hover { color: var(--primary-dark); }
+
+        /* 顶栏 */
+        header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .nav {
+            max-width: 1000px; margin: 0 auto; padding: 12px 20px;
+            display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+        }
+        .brand {
+            font-weight: 800; font-size: 1.2rem; color: var(--text); text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .brand .logo {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+        }
+        .nav-links { display: flex; gap: 4px; align-items: center; }
+        .nav a.link {
+            color: var(--muted); text-decoration: none; padding: 6px 12px; border-radius: 8px;
+            font-size: 0.95rem; transition: all .15s;
+        }
+        .nav a.link:hover { color: var(--text); background: #f1f5f9; }
+        .nav a.link.active { color: var(--primary); background: var(--primary-soft); font-weight: 600; }
+        .nav .spacer { flex: 1; }
+        .nav .user { color: var(--text); font-weight: 600; font-size: 0.95rem; }
+
+        .container { max-width: 1000px; margin: 28px auto; padding: 0 20px; }
+
+        /* 按钮 */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--primary); color: #fff !important;
+            padding: 8px 16px; border-radius: 9px; text-decoration: none;
+            border: none; cursor: pointer; font-size: 0.92rem; font-weight: 600;
+            transition: all .15s; white-space: nowrap;
+        }
+        .btn:hover { background: var(--primary-dark); }
+        .btn.secondary { background: #fff; color: var(--text) !important; border: 1px solid var(--border); }
+        .btn.secondary:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .btn.danger { background: var(--danger); }
+        .btn.danger:hover { background: #b91c1c; }
+        .btn.ghost { background: transparent; color: var(--muted) !important; border: 1px solid var(--border); }
+        .btn.ghost:hover { background: #f1f5f9; }
+        .btn.sm { padding: 5px 12px; font-size: 0.85rem; }
+
+        /* 卡片 */
+        .card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px; margin-bottom: 14px;
+            box-shadow: var(--shadow); transition: box-shadow .15s, transform .15s;
+        }
+        .card.hoverable:hover { box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08); transform: translateY(-1px); }
+
+        /* 标签 */
+        .tag {
+            display: inline-flex; align-items: center;
+            border-radius: 999px; padding: 2px 11px; font-size: 0.78rem; font-weight: 600;
+        }
+        .tag-book    { background: #dbeafe; color: #1d4ed8; }
+        .tag-note    { background: #dcfce7; color: #15803d; }
+        .tag-problem { background: #fef3c7; color: #b45309; }
+        .tag-course  { background: #ede9fe; color: #7c3aed; }
+        .tag-other   { background: #f1f5f9; color: #475569; }
+
+        /* 文件类型徽章 */
+        .file-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: #f1f5f9; color: #475569; border-radius: 6px;
+            padding: 1px 8px; font-size: 0.75rem; font-weight: 700;
+            letter-spacing: .03em; text-transform: uppercase;
+        }
+
+        .muted { color: var(--muted); }
+        .page-title { font-size: 1.5rem; font-weight: 800; margin: 0 0 16px; }
+
+        /* 消息 */
+        .messages { list-style: none; padding: 0; margin: 0 0 16px; }
+        .messages li {
+            padding: 11px 15px; border-radius: 9px; margin-bottom: 10px;
+            background: #ecfdf5; border: 1px solid #a7f3d0; font-size: 0.92rem;
+        }
+        .messages li.error { background: var(--danger-soft); border-color: #fecaca; }
+
+        /* 表单 */
+        form p { margin: 0 0 14px; }
+        form label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        form input[type=text], form input[type=password], form input[type=email],
+        form input[type=file], form select, form textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border);
+            border-radius: 9px; font-size: 0.95rem; font-family: inherit;
+            background: #fff; transition: border-color .15s;
+        }
+        form input:focus, form select:focus, form textarea:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+        .errorlist { color: var(--danger); list-style: none; padding: 0; margin: 5px 0; font-size: 0.85rem; }
+        .helptext { color: var(--muted); font-size: 0.82rem; }
+
+        /* 工具条（搜索/筛选） */
+        .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .toolbar input[type=text] { flex: 1; min-width: 180px; }
+        .toolbar select { width: auto; }
+
+        @media (max-width: 640px) {
+            .nav { gap: 8px; }
+            .nav .spacer { display: none; }
+            .container { padding: 0 14px; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="nav">
+        <a class="brand" href="{% url 'resource-list' %}">
+            <span class="logo">📚</span> 资料分享站
+        </a>
+        <div class="nav-links">
+            <a class="link {% if request.resolver_match.url_name == 'resource-list' %}active{% endif %}" href="{% url 'resource-list' %}">首页</a>
+            {% if user.is_authenticated %}
+                <a class="link {% if request.resolver_match.url_name == 'my-resources' %}active{% endif %}" href="{% url 'my-resources' %}">我的资料</a>
+            {% endif %}
+        </div>
+        <span class="spacer"></span>
+        {% if user.is_authenticated %}
+            <a class="btn sm" href="{% url 'resource-create' %}">＋ 上传资料</a>
+            <span class="user">{{ user.username }}</span>
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn ghost sm">登出</button>
+            </form>
+        {% else %}
+            <a class="link" href="{% url 'login' %}">登录</a>
+            <a class="btn sm" href="{% url 'register' %}">注册</a>
+        {% endif %}
+    </nav>
+</header>
+
+<main class="container">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>

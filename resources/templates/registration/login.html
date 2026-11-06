@@ -1,0 +1,17 @@
+{% extends 'resources/base.html' %}
+
+{% block title %}登录 - 资料分享站{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:400px; margin:0 auto;">
+    <h1 style="margin-top:0;">登录</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn" style="width:100%;">登录</button>
+    </form>
+    <p class="muted" style="margin-top:14px; text-align:center;">
+        还没有账号？<a href="{% url 'register' %}">立即注册</a>
+    </p>
+</div>
+{% endblock %}

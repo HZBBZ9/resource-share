@@ -1,0 +1,55 @@
+{% extends 'resources/base.html' %}
+
+{% block title %}我的资料 - 资料分享站{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+    <h1 class="page-title">我的资料</h1>
+    <a class="btn sm" href="{% url 'resource-create' %}">＋ 上传新资料</a>
+</div>
+
+{% if resources %}
+    {% for r in resources %}
+    <div class="card hoverable">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:0;">
+                <a href="{% url 'resource-detail' r.pk %}"
+                   style="font-size:1.05rem; font-weight:700; color:var(--text); text-decoration:none;">
+                    {{ r.title }}
+                </a>
+                <div style="margin-top:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span class="tag tag-{{ r.category }}">{{ r.category_display_name }}</span>
+                    {% if r.file_extension %}
+                        <span class="file-badge">{{ r.file_extension }}</span>
+                    {% endif %}
+                    <span class="muted" style="font-size:0.85rem;">{{ r.file_size_display }}</span>
+                    <span class="muted" style="font-size:0.85rem;">⬇ {{ r.download_count }} 次</span>
+                    <span class="muted" style="font-size:0.85rem;">{{ r.created_at|date:"Y-m-d" }}</span>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <a class="btn secondary sm" href="{% url 'resource-update' r.pk %}">编辑</a>
+                <a class="btn danger sm" href="{% url 'resource-delete' r.pk %}">删除</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if is_paginated %}
+    <div style="text-align:center; margin:22px 0; display:flex; gap:10px; justify-content:center; align-items:center;">
+        {% if page_obj.has_previous %}
+            <a class="btn secondary sm" href="?page={{ page_obj.previous_page_number }}">上一页</a>
+        {% endif %}
+        <span class="muted" style="font-size:0.9rem;">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span>
+        {% if page_obj.has_next %}
+            <a class="btn secondary sm" href="?page={{ page_obj.next_page_number }}">下一页</a>
+        {% endif %}
+    </div>
+    {% endif %}
+{% else %}
+    <div class="card" style="text-align:center; color:var(--muted); padding:48px;">
+        <div style="font-size:2rem; margin-bottom:8px;">📭</div>
+        你还没有上传过资料，<a href="{% url 'resource-create' %}">上传第一份</a> 吧！
+    </div>
+{% endif %}
+{% endblock %}

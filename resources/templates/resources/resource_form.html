@@ -1,0 +1,18 @@
+{% extends 'resources/base.html' %}
+
+{% block title %}{% if object %}编辑{% else %}上传{% endif %}资料 - 资料分享站{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:620px; margin:0 auto;">
+    <h1 class="page-title">{% if object %}编辑资料{% else %}上传资料{% endif %}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="muted" style="font-size:0.82rem; margin:0 0 16px; padding:10px 14px; background:#f8fafc; border-radius:9px;">
+            支持格式：PDF、Word、PPT、Excel、压缩包（zip/rar/7z）、图片、文本、音视频等；单个文件不超过 50MB。
+        </div>
+        <button type="submit" class="btn">{% if object %}保存修改{% else %}提交上传{% endif %}</button>
+        <a class="btn ghost" href="{% url 'resource-list' %}">取消</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'resources/base.html' %}
+
+{% block content %}
+<h1 class="page-title">全部资料</h1>
+
+<form method="get" class="card toolbar" style="padding:14px 16px;">
+    <input type="text" name="q" value="{{ q }}" placeholder="搜索标题关键词…">
+    <select name="category">
+        <option value="all" {% if category == 'all' %}selected{% endif %}>全部分类</option>
+        {% for value, label in categories %}
+            <option value="{{ value }}" {% if category == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <select name="sort">
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>最新</option>
+        <option value="downloads" {% if sort == 'downloads' %}selected{% endif %}>下载最多</option>
+    </select>
+    <button type="submit" class="btn">搜索</button>
+</form>
+
+{% if resources %}
+    {% for r in resources %}
+    <div class="card hoverable">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:14px;">
+            <div style="flex:1; min-width:0;">
+                <a href="{% url 'resource-detail' r.pk %}"
+                   style="font-size:1.08rem; font-weight:700; color:var(--text); text-decoration:none;">
+                    {{ r.title }}
+                </a>
+                <div style="margin-top:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span class="tag tag-{{ r.category }}">{{ r.category_display_name }}</span>
+                    {% if r.file_extension %}
+                        <span class="file-badge">{{ r.file_extension }}</span>
+                    {% endif %}
+                    <span class="muted" style="font-size:0.85rem;">{{ r.file_size_display }}</span>
+                </div>
+            </div>
+            <div style="text-align:right; white-space:nowrap;">
+                <span class="muted" style="font-size:0.85rem;">{{ r.uploader.username }}</span>
+            </div>
+        </div>
+        <div style="margin-top:8px; padding-top:10px; border-top:1px solid var(--border); font-size:0.85rem;" class="muted">
+            <span>{{ r.created_at|date:"Y-m-d" }}</span>
+            <span style="margin-left:14px;">⬇ 下载 {{ r.download_count }} 次</span>
+            {% if r.description %}
+                <span style="margin-left:14px;">{{ r.description|truncatechars:50 }}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if is_paginated %}
+    <div style="text-align:center; margin:22px 0; display:flex; gap:10px; justify-content:center; align-items:center;">
+        {% if page_obj.has_previous %}
+            <a class="btn secondary sm" href="?q={{ q }}&category={{ category }}&sort={{ sort }}&page={{ page_obj.previous_page_number }}">上一页</a>
+        {% endif %}
+        <span class="muted" style="font-size:0.9rem;">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span>
+        {% if page_obj.has_next %}
+            <a class="btn secondary sm" href="?q={{ q }}&category={{ category }}&sort={{ sort }}&page={{ page_obj.next_page_number }}">下一页</a>
+        {% endif %}
+    </div>
+    {% endif %}
+{% else %}
+    <div class="card" style="text-align:center; color:var(--muted); padding:48px;">
+        <div style="font-size:2rem; margin-bottom:8px;">📭</div>
+        {% if q or category != 'all' %}
+            没有找到符合条件的资料，换个关键词试试？
+        {% else %}
+            还没有资料，<a href="{% url 'resource-create' %}">上传第一份</a> 吧！
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}
